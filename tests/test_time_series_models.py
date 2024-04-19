@@ -1,8 +1,11 @@
 """Module to test time_series models
 """
+
 import pandas as pd  # type: ignore
 import pytest
+from sktime.forecasting.fbprophet import Prophet
 
+from pycaret.datasets import get_data
 from pycaret.time_series import TSForecastingExperiment
 
 ##########################
@@ -98,3 +101,12 @@ def test_custom_models(load_pos_data):
         "When passing a model not in PyCaret's model library, the custom_grid parameter must be provided."
         in exceptionmsg
     )
+
+
+def test_prophet_model_creation():
+    """Tests the creation of a Prophet model"""
+    exp = TSForecastingExperiment()
+    data = get_data("airline", verbose=False)
+    exp.setup(data=data, fold=2, fh=12, verbose=False)
+    model = exp.create_model("prophet")
+    assert isinstance(model, Prophet)
